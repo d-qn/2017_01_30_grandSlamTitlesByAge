@@ -1,0 +1,200 @@
+---
+title: "Scrape get grand slam titles by age"
+author: "Duc-Quang Nguyen"
+date: "30 Jan 2017"
+output: html_document
+---
+
+# Scrape
+
+## ATP world tour
+
+* [ATP ranking singles](http://www.atpworldtour.com/en/rankings/singles)
+* [all former n°1](http://www.atpworldtour.com/en/rankings/former-no-1s)
+
+## Related
+ * [NZZ Der Weg zu Titel Nummer 18 in einer Grafik](https://www.nzz.ch/sport/tennis/roger-federer-der-weg-zu-titel-nummer-18-in-einer-grafik-ld.142428?reduced=true)
+ * [Novak Djokovic Is Falling Behind In His Quest To Break Roger Federer’s Record](https://fivethirtyeight.com/features/novak-djokovic-is-falling-behind-in-his-quest-to-break-roger-federers-record/)
+
+## rvest
+
+ * [rvest tutorial: scraping the web using R](http://stat4701.github.io/edav/2015/04/02/rvest_tutorial/)
+
+
+```{r setup, include=FALSE}
+getData <- F
+
+library(rvest)
+library(magrittr)
+library(dplyr)
+library(readr)
+
+translation.file <- "input/Grand slam title by age - Sheet1.csv"
+
+grandSlams <- c('Australian Open', 'Wimbledon', 'Roland Garros', 'US Open')
+names(grandSlams) <- c('01-29', '07-16', '06-10', '09-10')
+
+players <- c(
+  'http://www.atpworldtour.com/en/players/roger-federer/f324/overview',
+  'http://www.atpworldtour.com/en/players/rafael-nadal/n409/overview',
+  'http://www.atpworldtour.com/en/players/novak-djokovic/d643/overview',
+  'http://www.atpworldtour.com//en/players/pete-sampras/s402/overview',
+  'http://www.atpworldtour.com/en/players/stan-wawrinka/w367/overview',
+  'http://www.atpworldtour.com/en/players/andy-murray/mc10/overview'
+)
+names(players) <- gsub("^.*players\\/.*\\-(.*)\\/.*\\/overview", "\\1", players)
+
+col.player <- c('#ab3d3f', '#666666', '#333366', '#d4c3aa', '#808080', '#999999')
+names(col.player) <- names(players)
+
+```
+
+## Download all titles
+
+** Get Data ** 
+
+```{r get path to titles}
+if(getData) {
+  ## Get list of titles
+  links <- gsub("overview", "titles-and-finals", players)
+  names(links) <- names(players)
+  
+  link <- links[4]
+  titles <- do.call(rbind, lapply(links, function(link) {
+    cat("\n", link)
+    rtable <- read_html(link) %>% 
+      html_nodes(".mega-table") %>% html_table()
+    rtable <- rtable[[1]]
+    
+    years <- rtable[[1]]
+    gs <- sapply(grandSlams, function(slam) grep(slam, rtable[[3]]))
+    gs <- sapply(gs, function(ii) if(length(ii) > 0) years[ii])
+    # remove NULL elements
+    gs <- gs[!sapply(gs, is.null)] 
+    
+    gs <- do.call(rbind, lapply(names(gs), function(slam) {
+      data.frame(
+        gs = as.character(grandSlams[which(names(grandSlams) == slam)]), 
+        date = as.Date(paste0(gs[[slam]], "-", names(grandSlams)[which(names(grandSlams) == slam)]))
+      )
+    }))
+    gs$player <- names(links)[which(links == link)]
+    gs
+  }))
+  
+  rownames(titles) <- NULL
+ 
+   #add current date
+  titles <- rbind(titles, data.frame(
+    gs = NA, 
+    date = as.Date(ifelse(names(players) == "sampras", as.Date("2003-08-25"), Sys.Date())),
+    player = names(players)))
+
+  ## get player DOB
+  dob <- sapply(players, function(url) {
+    cat("\n", url)
+    dob <- read_html(url) %>% 
+      html_nodes(".table-birthday")
+    gsub(".*(\\d{4}\\.\\d{2}\\.\\d{2}).*", "\\1", dob)
+  })
+  dob <- structure(as.Date(dob, format = "%Y.%m.%d"), names = names(dob))
+  
+  # add date of birth
+  titles$dob <- dob[match(titles$player, names(dob))]
+  
+  # add 16 years old
+  titles <- rbind(titles, data.frame(
+    gs = NA, 
+    date = as.Date(dob[match( names(players), names(dob))]) + (365.25 * 18),
+    player = names(players),
+    dob = as.Date(dob[match( names(players), names(dob))])
+    ))
+  
+  ## r wrangle
+  titles$age <- as.numeric((titles$date - titles$dob) / 365.25)
+  titles$agef <- floor(titles$age)
+  titles %<>% arrange(date)
+  
+  titles$title <- ifelse(is.na(titles$gs), 0, 1)
+  
+  # CumulatQive sum of grand slam titles
+  titles %<>% group_by(player) %>% mutate(count = cumsum(title)) %>%
+    ungroup()
+  
+  write.csv(titles, file = "input/titlesByAge.csv", row.names = F)  
+} else {
+  titles <- read_csv("input/titlesByAge.csv")
+}
+
+data <- titles %>% select(-dob)
+data$colour <- col.player[match(data$player, names(col.player))]
+```
+
+```{r plot}
+library(ggplot2)
+library(scales)
+library(swiTheme)
+
+txt <- loadTranslation(translation.file)
+
+# firstup <- function(x) {
+#    substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+# x
+# }
+
+lang <- 'EN'
+
+myTheme <- function(base_family, title_family, base_size = 19) {
+  swi_theme(base_family = base_family, subtitle = base_family, title_family = title_family, base_size = base_size) + 
+    theme(
+      panel.grid.major.y=element_line(color="#b3b3b3", linetype="dashed", size=0.2),
+      panel.background = element_rect(fill = "#f2f2f2", color = NA),
+      plot.background = element_rect(fill = "#f2f2f2", color = NA),
+      strip.text = element_text(size = 12, hjust = 0, family = base_family, colour = "#595959", face = "bold"),
+      legend.position = c(.83, .4),
+      plot.subtitle=element_text(family = base_family, color = '#4A4A4A', size = base_size * 0.9),
+      plot.caption=element_text(size = base_size * 0.6, margin=margin(t=13), color = '#737373', hjust = 1),
+      plot.title=element_text(family = title_family, size = base_size * 1.1, margin=margin(b=13)),
+      plot.margin=unit(c(0.6, 0.45, 0.05, 0.45), "cm")
+    ) 
+}
+
+for(lang in colnames(txt)) {
+  cat("\n", lang)
+  ddd <- data
+  
+  # get translations
+  ddd$player <- txt[ddd$player, lang]
+  ddd$gs <- txt[ddd$gs, lang]
+  
+  gp <- ggplot(data = ddd) + 
+    geom_line(aes(age, count, group = player, colour = colour), size = 1.1, alpha = 1) + 
+    myTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang],
+            base_size = 19 * as.numeric(txt['font.factor', lang])) +
+    geom_point(
+      data = ddd %>% filter(!is.na(gs)), 
+      aes(age, count, group = gs, shape = gs, fill = gs), size = 3.2, 
+      alpha = 0.77, colour = "white") +
+    scale_colour_identity() + 
+    scale_x_continuous(name = txt['x.lab', lang], expand = c(0.01,0.08)) +
+    scale_y_continuous(name = txt['y.lab', lang], breaks = scales::pretty_breaks(n = 10), limits = c(0, 19), expand = c(0,0)) +
+    scale_shape_manual(values = 21:24, guide = guide_legend(title = NULL))  + 
+    scale_fill_manual(values = c('#3a9736', '#663333', '#333366', '#996699'), 
+                      guide = guide_legend(title = NULL)) +
+    geom_text(data = ddd %>% filter(is.na(gs), age > 20), 
+              aes(age, count, label = player, colour = colour), 
+              nudge_y = 0.29, hjust = 0.9, family = txt['title.font', lang], 
+              size = 3.7 * as.numeric(txt['font.factor', lang])) +
+    labs(
+      subtitle = txt['descr', lang],
+      caption = paste0(txt['source', lang], ": ", txt['source.name', lang], " | @duc_qn | swissinfo.ch "),
+      title =  txt['main.title', lang])
+  
+  png(filename = paste0("output/graphic_", lang, ".png") , width = 640 * 2, height = (640 * 2)*1.25, res = 170)
+  print(gp)
+  dev.off() 
+}
+
+
+
+```
