@@ -1,21 +1,21 @@
 code,EN,FR,DE,IT,PT,AR,RU,ES,JA,ZH
-main.title,Federer defies age trend for grand slam winners,,,,,,,,,费德勒的胜利无疑是对大满贯冠军年龄趋势的一次挑战
-descr,Grand Slam titles won by age,,,,,,,,,赢得大满贯头衔的年龄
-y.lab,Grand Slam titles,,,,,,,,,大满贯头衔
-x.lab,Age,,,,,,,,,年龄
-federer,Federer,,,,,,,,,费德勒
-nadal,Nadal,,,,,,,,,纳达尔
-djokovic,Djokovic,,,,,,,,,德约科维奇
-sampras,Sampras,,,,,,,,,桑普拉斯
-wawrinka,Wawrinka,,,,,,,,,瓦林卡
-murray,Murray,,,,,,,,,穆雷
-Australian Open,Australian Open,,,,,,,,,澳网
-Roland Garros,Roland Garros,,,,,,,,,法网
-US Open,US Open,,,,,,,,,美网
-Wimbledon,Wimbledon,,,,,,,,,温布尔登
-source,Source,source,Quelle,Fonte,fonte,المصدر,Источник,Fuente,出典,来源
+main.title,Federer defies age trend for grand slam winners,Federer et les autres champions du Grand Chelem ,Federer widersetzt sich dem Jugendtrend der Grand-Slam-Gewinner,Federer sfida l'età media dei vincitori del Grande Slam,Federer é o mais velho vencedor de um Grand Slam ,روجيه فيدرر يتحدّ اتجاه سن الفائزين في البطولات الأربعة الكبرى في لعبة كرة المضرب,Роджер Федерер и его победа над возрастом,Federer desafía el promedio de edad de los campeones de títulos de Grand Slam,,费德勒的胜利无疑是对大满贯冠军年龄趋势的一次挑战
+descr,Grand Slam titles won by age,Titres du Grand Chelem remportés selon l'âge,Grand-Slam-Titel nach Alter,Titoli vinti in un Grande Slam in funzione dell'età di un giocatore,Título de um Grand Slam pela idade do jogador,الفوز بالبطولات الأربعة الكبرى بحسب العمر,Возраст победы на турнире Большого Шлема,Títulos de Grand Slam ganados de acuerdo a la edad del jugador,,赢得大满贯头衔的年龄
+y.lab,Grand Slam titles,Titres du Grand Chelem,Grand-Slam-Titel,Titoli di un Grande Slam,Título de Um Graand Slam,البطولات الأربعة الكبرى,Победы на турнирах Большого Шлема,Títulos de Grand Slam ,,大满贯头衔
+x.lab,Age,Âge,Alter,Età,Idade,العمر,Возраст ,Edad,,年龄
+federer,Federer,Federer,Federer,Federer,Federer,روجيه فيدرر,Федерер,Federer ,,费德勒
+nadal,Nadal,Nadal,Nadal,Nadal,Nadal,رافيال نادال,Надаль,Nadal,,纳达尔
+djokovic,Djokovic,Djokovic,Djokovic,Djokovic,Djokovic,نوفاك ديوكوفيتش,Джокович,Djokovic,,德约科维奇
+sampras,Sampras,Sampras,Sampras,Sampras,Sampras,بيت سامبراس,Сампрас,Sampras,,桑普拉斯
+wawrinka,Wawrinka,Wawrinka,Wawrinka,Wawrinka,Wawrinka,ستان فافرينكا,Вавринка,Wawrinka,,瓦林卡
+murray,Murray,Murray,Murray,Murray,Murray,أندري موراي,Мюррей,Murray,,穆雷
+Australian Open,Australian Open,Open d'Australie,Australian Open,Open d'Australia,Open da Austrália,بطولة أستراليا المفتوحة,Australian Open,Abierto de Australia,,澳网
+Roland Garros,Roland Garros,Roland Garros,Roland Garros,Roland Garros,Roland Garros,رولان غاروس,Ролан Гаррос,Roland Garros,,法网
+US Open,US Open,US Open,US Open,US Open,US open,بطولة الولايات المتحدة المفتوحة,US Open,Abierto de EEUU,,美网
+Wimbledon,Wimbledon,Wimbledon,Wimbledon,Wimbledon,Wimbledon,بطولة ويمبلدن,Уимблдон,Wimbledon,,温布尔登
+source,Source,source,Quelle,Fonte,Fonte,المصدر,Источник,Fuente,出典,来源
 source.name,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour,ATP World Tour
 code,Code,code,Code,Codice,código,الرمز,Код,código,コード,代码
 title.font,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,OpenSans-CondensedBold,PingFang TC Regular,PingFang TC Regular
 base.font,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,OpenSans-CondensedLight,PingFang TC Thin,PingFang TC Thin
-font.factor,1,1,1,1,1,1,1,1,0.85,0.85
+font.factor,1,1,1,1,1,1,1,0.92,0.85,0.85

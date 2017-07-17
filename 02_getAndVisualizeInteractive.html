@@ -182,7 +182,7 @@ $(document).ready(function () {
    #add current date
   titles &lt;- rbind(titles, data.frame(
     gs = NA, 
-    date = as.Date(ifelse(names(players) == &quot;sampras&quot;, as.Date(&quot;2003-08-25&quot;), Sys.Date())),
+    date = as.Date(ifelse(names(players) == &quot;sampras&quot;, as.Date(&quot;2003-08-25&quot;), Sys.Date()), origin=&quot;1970-01-01&quot;),
     player = names(players)))
 
   ## get player DOB
@@ -220,17 +220,19 @@ $(document).ready(function () {
 } else {
   titles &lt;- read_csv(&quot;input/titlesByAge.csv&quot;)
 }</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   gs = col_character(),
-##   date = col_date(format = &quot;&quot;),
-##   player = col_character(),
-##   dob = col_date(format = &quot;&quot;),
-##   age = col_double(),
-##   agef = col_integer(),
-##   title = col_integer(),
-##   count = col_integer()
-## )</code></pre>
+<pre><code>## 
+##  http://www.atpworldtour.com/en/players/roger-federer/f324/titles-and-finals
+##  http://www.atpworldtour.com/en/players/rafael-nadal/n409/titles-and-finals
+##  http://www.atpworldtour.com/en/players/novak-djokovic/d643/titles-and-finals
+##  http://www.atpworldtour.com//en/players/pete-sampras/s402/titles-and-finals
+##  http://www.atpworldtour.com/en/players/stan-wawrinka/w367/titles-and-finals
+##  http://www.atpworldtour.com/en/players/andy-murray/mc10/titles-and-finals
+##  http://www.atpworldtour.com/en/players/roger-federer/f324/overview
+##  http://www.atpworldtour.com/en/players/rafael-nadal/n409/overview
+##  http://www.atpworldtour.com/en/players/novak-djokovic/d643/overview
+##  http://www.atpworldtour.com//en/players/pete-sampras/s402/overview
+##  http://www.atpworldtour.com/en/players/stan-wawrinka/w367/overview
+##  http://www.atpworldtour.com/en/players/andy-murray/mc10/overview</code></pre>
 <pre class="r"><code>data &lt;- titles %&gt;% select(-dob)
 data$colour &lt;- col.player[match(data$player, names(col.player))]</code></pre>
 <pre class="r"><code>library(ggplot2)
@@ -277,51 +279,59 @@ for(lang in colnames(txt)) {
   ddd$gs &lt;- txt[ddd$gs, lang]
   
   gp &lt;- ggplot(data = ddd) + 
+    geom_line(aes(age, count, group = player, colour = colour), size = 1, alpha = 1) + 
+    myTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang],
+            base_size = 19 * as.numeric(txt['font.factor', lang])) +
     geom_point(
       data = ddd %&gt;% filter(!is.na(gs)), 
       aes(age, count, group = gs, shape = gs, fill = gs), size = 3.2, 
-      alpha = 0.8, stroke = 0) +
-    geom_step(aes(age, count, group = player, colour = colour), size = 0.8, alpha = 1) + 
-    myTheme(base_family = txt['base.font', lang], title_family = txt['title.font', lang],
-            base_size = 19 * as.numeric(txt['font.factor', lang])) +
-  
+      alpha = 0.77, colour = &quot;white&quot;) +
     scale_colour_identity() + 
-    scale_x_continuous(name = txt['x.lab', lang], expand = c(0.01,0.08), scales::pretty_breaks(n = 8)) +
-    scale_y_continuous(name = txt['y.lab', lang], breaks = scales::pretty_breaks(n = 10), limits = c(0, 20), expand = c(0,0)) +
+    scale_x_continuous(name = txt['x.lab', lang], expand = c(0.01,0.08)) +
+    scale_y_continuous(name = txt['y.lab', lang], breaks = scales::pretty_breaks(n = 10), limits = c(0, 19), expand = c(0,0)) +
     scale_shape_manual(values = 21:24, guide = guide_legend(title = NULL))  + 
     scale_fill_manual(values = c('#3a9736', '#663333', '#333366', '#996699'), 
                       guide = guide_legend(title = NULL)) +
     geom_text(data = ddd %&gt;% filter(is.na(gs), age &gt; 20), 
               aes(age, count, label = player, colour = colour), 
-              nudge_y = 0.34, hjust = 0.9, family = txt['title.font', lang], 
+              nudge_y = 0.29, hjust = 0.9, family = txt['title.font', lang], 
               size = 3.7 * as.numeric(txt['font.factor', lang])) +
     labs(
       subtitle = txt['descr', lang],
       caption = paste0(txt['source', lang], &quot;: &quot;, txt['source.name', lang], &quot; | @duc_qn | swissinfo.ch &quot;),
       title =  txt['main.title', lang])
   
-  png(filename = paste0(&quot;output/graphic_&quot;, lang, &quot;.png&quot;) , width = 640 * 2, height = (640 * 2)*1.25, res = 170)
+  png(filename = paste0(&quot;output/graphic_step_&quot;, lang, &quot;.png&quot;) , width = 640 * 2, height = (640 * 2)*1.25, res = 170)
   print(gp)
   dev.off() 
 }</code></pre>
 <pre><code>## 
 ##  EN</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  FR</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  DE</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  IT</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  PT</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  AR</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  RU</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  ES</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 <pre><code>## 
 ##  ZH</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
 </div>
 </div>
 
